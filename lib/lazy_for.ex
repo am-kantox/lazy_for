@@ -14,6 +14,12 @@ defmodule LazyFor do
       iex> Enum.to_list(result)
       [2, 4, 6, 8]
 
+      iex> users = [user: "john", admin: "meg", guest: "barbara"]
+      iex> result = stream {type, name} when type != :guest <- users do
+      ...>   String.upcase(name)
+      ...> end
+      iex> Enum.to_list(result)
+      ["JOHN", "MEG"]
   """
   defmacrop a(), do: quote(do: {:acc, [], Elixir})
 
@@ -38,14 +44,12 @@ defmodule LazyFor do
          {:<-, _meta, [{:when, _inner_meta, [var, conditions]}, source]},
          {__s__(), _, _} = inner,
          acc
-       ) do
-    do_stransf_clause(source, acc, do_fn_body(inner, var, conditions))
-  end
+       ),
+       do: do_stransf_clause(source, acc, do_fn_body(inner, var, conditions))
 
   # simple comprehension, inner, guards
-  defp clause({:<-, _meta, [{:when, _inner_meta, [var, conditions]}, source]}, inner, acc) do
-    do_stransf_clause(source, acc, do_fn_body([inner], var, conditions))
-  end
+  defp clause({:<-, _meta, [{:when, _inner_meta, [var, conditions]}, source]}, inner, acc),
+    do: do_stransf_clause(source, acc, do_fn_body([inner], var, conditions))
 
   # simple comprehension, outer, no guards
   defp clause({:<-, _meta, [var, source]}, {__s__(), _, _} = inner, acc),
@@ -56,20 +60,18 @@ defmodule LazyFor do
     do: do_stransf_clause(source, acc, do_fn_body([inner], var))
 
   # condition
-  defp clause(guard, {__s__(), _, _} = inner, _acc) do
-    {sfilter(), [], [inner, {:fn, [], [{:->, [], [[{:_, [], Elixir}], guard]}]}]}
-  end
+  defp clause(guard, {__s__(), _, _} = inner, _acc),
+    do: {sfilter(), [], [inner, {:fn, [], [{:->, [], [[{:_, [], Elixir}], guard]}]}]}
 
-  defp clause(guard, inner, _acc) do
-    {sfilter(), [], [[inner], {:fn, [], [{:->, [], [[{:_, [], Elixir}], guard]}]}]}
-  end
+  defp clause(guard, inner, _acc),
+    do: {sfilter(), [], [[inner], {:fn, [], [{:->, [], [[{:_, [], Elixir}], guard]}]}]}
 
   ##############################################################################
 
   defp do_stransf_clause(source, acc, fn_body),
-    do: {stransf(), [], [source, acc, {:fn, [], [{:->, [], fn_body}]}]}
+    do: {stransf(), [], [source, acc, {:fn, [], fn_body}]}
 
-  defp do_fn_body(inner, var), do: [[var, a()], {inner, a()}]
+  defp do_fn_body(inner, var), do: [{:->, [], [[var, a()], {inner, a()}]}]
 
   defp do_fn_body(inner, var, conditions) do
     [

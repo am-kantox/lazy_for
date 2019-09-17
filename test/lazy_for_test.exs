@@ -15,6 +15,12 @@ defmodule LazyForTest do
     assert Enum.take(result, 1_000) == [10, 20, 20, 40, 30, 60]
   end
 
+  test "works with guards" do
+    result = stream(e1 when e1 != 2 <- [1, 2, 3], e2 <- [10, 20], do: e1 * e2)
+    assert Enum.take(result, 1) == [10]
+    assert Enum.take(result, 1_000) == [10, 20, 30, 60]
+  end
+
   test "works with conditionals" do
     result =
       stream(
