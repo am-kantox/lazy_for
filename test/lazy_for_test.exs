@@ -35,7 +35,7 @@ defmodule LazyForTest do
   end
 
   test "works with chained conditionals" do
-    result = stream(e1 <- [1, 2, 3], e1 > 0, rem(e1, 2) != 0, e2 <- [10, 20], do: e1 * e2)
-    assert Enum.to_list(result) == [10, 20, 30, 60]
+    result = stream(e1 <- [1, 2, 3], e1 > 1, rem(e1, 2) != 0, e2 <- [10, 20], do: e1 * e2)
+    assert Enum.to_list(result) == [30, 60]
   end
 end

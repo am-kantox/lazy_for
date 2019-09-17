@@ -10,9 +10,20 @@ defmodule LazyFor do
   _Examples:_
 
       iex> import LazyFor
+      iex> # A list generator:
       iex> result = stream n <- [1, 2, 3, 4], do: n * 2
       iex> Enum.to_list(result)
       [2, 4, 6, 8]
+
+      iex> # A comprehension with two generators
+      iex> result = stream x <- [1, 2], y <- [2, 3], do: x * y
+      iex> Enum.to_list(result)
+      [2, 3, 4, 6]
+
+      iex> # A comprehension with a generator and a filter
+      iex> result = stream n <- [1, 2, 3, 4, 5, 6], rem(n, 2) == 0, do: n
+      iex> Enum.to_list(result)
+      [2, 4, 6]
 
       iex> users = [user: "john", admin: "meg", guest: "barbara"]
       iex> result = stream {type, name} when type != :guest <- users do

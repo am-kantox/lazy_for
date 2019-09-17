@@ -1,21 +1,18 @@
 # LazyFor
 
-**TODO: Add description**
+![Scene in club lounge, by Thomas Rowlandson](http://github.com/am-kantox/lazy_for/stuff/1118px-British_club_scene.jpg?raw=true)
+
+<small>Scene in club lounge, by [Thomas Rowlandson](https://en.wikipedia.org/wiki/Thomas_Rowlandson)</small>
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `lazy_for` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:lazy_for, "~> 0.1.0"}
+    {:lazy_for, "~> 0.1"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/lazy_for](https://hexdocs.pm/lazy_for).
+## [Documentation](https://hexdocs.pm/lazy_for).
 
