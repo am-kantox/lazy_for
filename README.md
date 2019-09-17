@@ -1,8 +1,7 @@
 # LazyFor
 
 ![Scene in club lounge, by Thomas Rowlandson](https://raw.githubusercontent.com/am-kantox/lazy_for/master/stuff/1118px-British_club_scene.jpg)
-
-<small>Scene in club lounge, by [Thomas Rowlandson](https://en.wikipedia.org/wiki/Thomas_Rowlandson)</small>
+> <small>Scene in club lounge, by [Thomas Rowlandson](https://en.wikipedia.org/wiki/Thomas_Rowlandson)</small>
 
 ## Installation
 
