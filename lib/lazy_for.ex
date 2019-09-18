@@ -70,6 +70,10 @@ defmodule LazyFor do
   defp clause({:<-, _meta, [var, source]}, inner, acc),
     do: do_stransf_clause(source, acc, do_fn_body([inner], var))
 
+  # expression
+  defp clause({:=, meta, [var, expression]}, inner, acc),
+    do: clause({:<-, meta, [var, [expression]]}, inner, acc)
+
   # condition
   defp clause(guard, {__s__(), _, _} = inner, _acc),
     do: {sfilter(), [], [inner, {:fn, [], [{:->, [], [[{:_, [], Elixir}], guard]}]}]}
@@ -82,14 +86,20 @@ defmodule LazyFor do
   defp do_stransf_clause(source, acc, fn_body),
     do: {stransf(), [], [source, acc, {:fn, [], fn_body}]}
 
-  defp do_fn_body(inner, var), do: [{:->, [], [[var, a()], {inner, a()}]}]
+  defp do_fn_body(inner, {var_name, _, ctx} = var) when is_atom(var_name) and is_atom(ctx),
+    do: [{:->, [], [[var, a()], {inner, a()}]}]
 
-  defp do_fn_body(inner, var, conditions) do
-    [
+  defp do_fn_body(inner, var),
+    do: [
+      {:->, [], [[var, a()], {inner, a()}]},
+      {:->, [], [[{:_, [], Elixir}, a()], {[], a()}]}
+    ]
+
+  defp do_fn_body(inner, var, conditions),
+    do: [
       {:->, [], [[{:when, [], [var, a(), conditions]}], {inner, a()}]},
       {:->, [], [[{:_, [], Elixir}, a()], {[], a()}]}
     ]
-  end
 
   ##############################################################################
 
