@@ -53,6 +53,11 @@ end
 
 ## Changelog
 
+### `v0.3.0`
+
+- optional arguments `:into`, `:uniq`, and `:take`
+- remaining: `:reduce`
+
 ### `v0.2.0`
 
 - assignments inside the pipeline
