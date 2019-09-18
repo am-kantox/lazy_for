@@ -44,6 +44,13 @@ defmodule LazyFor.Test do
     assert Enum.to_list(stream(<<c <- "a b c">>, c != ?\s, do: c)) == 'abc'
   end
 
+  test "works as for with :take" do
+    list = 1..1_000
+    greedy = for i <- list, rem(i, 3) == 0, do: i * 2
+    lazy = stream(i <- list, rem(i, 3) == 0, take: :all, do: i * 2)
+    assert greedy == lazy
+  end
+
   ##############################################################################
   ########### stolen from test/elixir/kernel/comprehension_test.exs ############
   ##############################################################################

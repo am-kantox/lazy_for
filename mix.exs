@@ -46,6 +46,7 @@ defmodule Rambla.MixProject do
   defp deps do
     [
       # dev, test
+      {:benchfella, "~> 0.3", only: [:dev]},
       {:credo, "~> 1.0", only: [:dev, :ci], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :ci], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
