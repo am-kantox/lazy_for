@@ -31,6 +31,9 @@ defmodule LazyFor do
       ...> end
       iex> Enum.to_list(result)
       ["JOHN", "MEG"]
+
+      iex> Enum.to_list(stream <<c <- "a b c">>, c != ?\s, do: c)
+      'abc'
   """
   defmacrop a(), do: quote(do: {:acc, [], Elixir})
 

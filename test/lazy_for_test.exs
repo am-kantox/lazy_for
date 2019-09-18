@@ -39,6 +39,11 @@ defmodule LazyFor.Test do
     assert Enum.to_list(result) == [30, 60]
   end
 
+  test "binary comprehensions" do
+    assert Enum.to_list(stream(<<c <- "abc">>, do: c)) == 'abc'
+    assert Enum.to_list(stream(<<c <- "a b c">>, c != ?\s, do: c)) == 'abc'
+  end
+
   ##############################################################################
   ########### stolen from test/elixir/kernel/comprehension_test.exs ############
   ##############################################################################

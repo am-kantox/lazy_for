@@ -36,6 +36,9 @@ iex> result = stream {type, name} when type != :guest <- users do
 ...> end
 iex> Enum.to_list(result)
 ["JOHN", "MEG"]
+
+iex> Enum.to_list(stream <<c <- "a b c">>, c != ?\s, do: c)
+'abc'
 ```
 
 ## Installation
@@ -47,6 +50,13 @@ def deps do
   ]
 end
 ```
+
+## Changelog
+
+### `v0.2.0`
+
+- assignments inside the pipeline
+- support for binary comprehensions
 
 ## [Documentation](https://hexdocs.pm/lazy_for).
 
