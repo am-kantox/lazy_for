@@ -74,6 +74,24 @@ defmodule LazyFor do
   defp clause({:=, meta, [var, expression]}, inner, acc),
     do: clause({:<-, meta, [var, [expression]]}, inner, acc)
 
+  # TODO
+  # stream <<r::8, g::8, b::8 <- pixels>>, do: {r, g, b}
+  # {{:<<>>, _,
+  #   [
+  #     {:"::", _, [{:r, _, nil}, 8]},
+  #     {:"::", _, [{:g, _, nil}, 8]},
+  #     {:<-, _, [{:"::", _, [{:b, _, nil}, 8]}, {:pixels, _, nil}]}
+  #   ]}, {:{}, _, [{:r, _, nil}, {:g, _, nil}, {:b, _, nil}]}}
+
+  # binary string
+  defp clause({:<<>>, _, [{:<-, meta, [var, source]}]}, inner, acc) when is_bitstring(source),
+    do:
+      clause(
+        {:<-, meta, [var, {{:., [], [:erlang, :bitstring_to_list]}, [], [source]}]},
+        inner,
+        acc
+      )
+
   # condition
   defp clause(guard, {__s__(), _, _} = inner, _acc),
     do: {sfilter(), [], [inner, {:fn, [], [{:->, [], [[{:_, [], Elixir}], guard]}]}]}
