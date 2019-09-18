@@ -51,6 +51,19 @@ defmodule LazyFor.Test do
     assert greedy == lazy
   end
 
+  test "works as native stream" do
+    list = 1..1_000
+
+    native =
+      list
+      |> Stream.map(&(&1 * 2))
+      |> Stream.filter(&(rem(&1, 33) == 0))
+      |> Enum.to_list()
+
+    lazy = stream(i <- list, rem(i, 33) == 0, take: :all, do: i * 2)
+    assert native == lazy
+  end
+
   ##############################################################################
   ########### stolen from test/elixir/kernel/comprehension_test.exs ############
   ##############################################################################
