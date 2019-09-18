@@ -77,7 +77,7 @@ defmodule LazyFor.Test do
              stream(
                {var, _}
                when is_atom(var) <- [{:foo, 1}, {2, :bar}],
-               #! FIXME var = Atom.to_string(var),
+               var = Atom.to_string(var),
                do: var
              )
            ) == ["foo"]
@@ -105,7 +105,7 @@ defmodule LazyFor.Test do
   end
 
   test "for comprehensions with variables in filters" do
-    #! FIXME assert Enum.to_list(stream(x <- 1..3, y = x + 1, y > 2, z = y, do: x * z)) == [6, 12]
+    assert Enum.to_list(stream(x <- 1..3, y = x + 1, y > 2, z = y, do: x * z)) == [6, 12]
   end
 
   test "for comprehensions with two enum generators" do
