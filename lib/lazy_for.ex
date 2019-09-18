@@ -87,6 +87,9 @@ defmodule LazyFor do
   #   ]}, {:{}, _, [{:r, _, nil}, {:g, _, nil}, {:b, _, nil}]}}
 
   # binary string
+  defp clause({:<<>>, outer_meta, [{:<-, meta, [{:<<>>, _, [var]}, source]}]}, inner, acc),
+    do: clause({:<<>>, outer_meta, [{:<-, meta, [var, source]}]}, inner, acc)
+
   defp clause({:<<>>, _, [{:<-, meta, [var, source]}]}, inner, acc),
     do:
       clause(
