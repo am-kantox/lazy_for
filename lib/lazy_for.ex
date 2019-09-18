@@ -32,7 +32,7 @@ defmodule LazyFor do
       iex> Enum.to_list(result)
       ["JOHN", "MEG"]
 
-      iex> Enum.to_list(stream <<c <- "a b c">>, c != ?\s, do: c)
+      iex> Enum.to_list(stream <<c <- "a|b|c">>, c != ?|, do: c)
       'abc'
   """
   defmacrop a(), do: quote(do: {:acc, [], Elixir})
@@ -87,7 +87,7 @@ defmodule LazyFor do
   #   ]}, {:{}, _, [{:r, _, nil}, {:g, _, nil}, {:b, _, nil}]}}
 
   # binary string
-  defp clause({:<<>>, _, [{:<-, meta, [var, source]}]}, inner, acc) when is_bitstring(source),
+  defp clause({:<<>>, _, [{:<-, meta, [var, source]}]}, inner, acc),
     do:
       clause(
         {:<-, meta, [var, {{:., [], [:erlang, :bitstring_to_list]}, [], [source]}]},
@@ -124,14 +124,59 @@ defmodule LazyFor do
 
   ##############################################################################
 
-  @clauses 42
+  defp do_apply_opts(ast, opts) do
+    ast =
+      if opts[:uniq],
+        do: {{:., [], [{:__aliases__, [alias: false], [:Stream]}, :uniq]}, [], [ast]},
+        else: ast
+
+    into = opts[:into]
+
+    ast =
+      if into,
+        do: {{:., [], [{:__aliases__, [alias: false], [:Stream]}, :into]}, [], [ast, into]},
+        else: ast
+
+    case opts[:take] do
+      :all ->
+        {{:., [], [{:__aliases__, [alias: false], [:Enum]}, :to_list]}, [], [ast]}
+
+      i when is_integer(i) ->
+        {{:., [], [{:__aliases__, [alias: false], [:Enum]}, :take]}, [], [ast, i]}
+
+      _ ->
+        ast
+    end
+  end
+
+  @clauses Application.get_env(:lazy_for, :clause_limit, 18)
   @args for i <- 1..(@clauses + 1),
             into: %{},
             do: {i, Enum.map(1..i, &Macro.var(:"arg_#{&1}", nil))}
 
   for i <- 1..@clauses do
     @doc false
-    defmacro stream(unquote_splicing(@args[i]), do: block),
-      do: with({_, s} <- reduce_clauses(unquote(@args[i]), block), do: s)
+    [last | rest] = :lists.reverse(@args[i])
+    rest = :lists.reverse(rest)
+
+    defmacro stream(unquote_splicing(rest), unquote(last), do: block)
+             when not is_list(unquote(last)),
+             do: with({_, s} <- reduce_clauses(unquote(@args[i]), block), do: s)
+  end
+
+  for i <- 2..@clauses do
+    @doc false
+    [last | rest] = :lists.reverse(@args[i])
+    rest = :lists.reverse(rest)
+
+    defmacro stream(unquote_splicing(rest), unquote(last), do: block)
+             when is_list(unquote(last)) do
+      with {_, ast} <- reduce_clauses(unquote(rest), block), do: do_apply_opts(ast, unquote(last))
+    end
+
+    defmacro stream(unquote_splicing(rest), unquote(last)) do
+      {block, opts} = Keyword.pop(unquote(last), :do)
+      with {_, ast} <- reduce_clauses(unquote(rest), block), do: do_apply_opts(ast, opts)
+    end
   end
 end
