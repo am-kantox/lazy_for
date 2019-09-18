@@ -71,7 +71,6 @@ defmodule LazyFor.Test do
     assert Enum.to_list(stream(x when x == 3 when x == 7 <- 1..10, do: x)) == [3, 7]
   end
 
-  @tag :skip
   test "for comprehensions with guards and filters" do
     assert Enum.to_list(
              stream(
