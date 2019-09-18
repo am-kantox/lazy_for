@@ -2,7 +2,7 @@ defmodule Rambla.MixProject do
   use Mix.Project
 
   @app :lazy_for
-  @version "0.2.0"
+  @version "0.3.0"
   System.put_env("MIX_LOADED_APP", to_string(@app))
 
   def project do
