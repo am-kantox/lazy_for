@@ -26,5 +26,5 @@ lazy_for-*.tar
 
 /.elixir_ls/
 
-/bench/snaphots/
+/bench/snapshots/
 
