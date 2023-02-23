@@ -2,7 +2,7 @@ defmodule Rambla.MixProject do
   use Mix.Project
 
   @app :lazy_for
-  @version "0.3.0"
+  @version "1.0.0"
   System.put_env("MIX_LOADED_APP", to_string(@app))
 
   def project do
@@ -48,7 +48,7 @@ defmodule Rambla.MixProject do
       # dev, test
       {:benchfella, "~> 0.3", only: [:dev]},
       {:credo, "~> 1.0", only: [:dev, :ci], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :ci], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev, :ci], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end

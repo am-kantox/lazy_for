@@ -53,6 +53,10 @@ end
 
 ## Changelog
 
+### `v1.0.0`
+
+- version bump
+
 ### `v0.3.0`
 
 - optional arguments `:into`, `:uniq`, and `:take`

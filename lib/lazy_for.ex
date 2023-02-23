@@ -152,7 +152,7 @@ defmodule LazyFor do
     end
   end
 
-  @clauses Application.get_env(:lazy_for, :clause_limit, 18)
+  @clauses Application.compile_env(:lazy_for, :clause_limit, 18)
   @args for i <- 1..(@clauses + 1),
             into: %{},
             do: {i, Enum.map(1..i, &Macro.var(:"arg_#{&1}", nil))}

@@ -2,9 +2,6 @@ defmodule LazyFor.CLIFormatter do
   @moduledoc false
   use GenServer
 
-  import ExUnit.Formatter,
-    only: [format_time: 2, format_filters: 2, format_test_failure: 5, format_test_all_failure: 5]
-
   ## Callbacks
 
   def init(opts) do
