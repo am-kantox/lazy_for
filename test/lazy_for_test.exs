@@ -40,8 +40,8 @@ defmodule LazyFor.Test do
   end
 
   test "binary comprehensions" do
-    assert Enum.to_list(stream(<<c <- "abc">>, do: c)) == 'abc'
-    assert Enum.to_list(stream(<<c <- "a b c">>, c != ?\s, do: c)) == 'abc'
+    assert Enum.to_list(stream(<<c <- "abc">>, do: c)) == ~c"abc"
+    assert Enum.to_list(stream(<<c <- "a b c">>, c != ?\s, do: c)) == ~c"abc"
   end
 
   test "works as for with :take" do

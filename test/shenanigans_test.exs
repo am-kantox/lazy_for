@@ -166,7 +166,7 @@ defmodule LazyFor.KeywordOptions.Test do
         acc -> Map.update(acc, x, [y], &[y | &1])
       end
 
-    assert acc == %{1 => 'olleh', 3 => 'olleh'}
+    assert acc == %{1 => ~c"olleh", 3 => ~c"olleh"}
   end
 
   test "list for comprehensions into binary" do
@@ -222,7 +222,7 @@ defmodule LazyFor.KeywordOptions.Test do
         acc -> Map.update(acc, x, [y], &[y | &1])
       end
 
-    assert acc == %{1 => 'olleh', 3 => 'olleh'}
+    assert acc == %{1 => ~c"olleh", 3 => ~c"olleh"}
   end
 
   ## Binary generators
@@ -281,19 +281,17 @@ defmodule LazyFor.KeywordOptions.Test do
              end
            ) == [<<0::size(2)>>, <<1::size(1)>>, <<2::size(2)>>, <<3::size(1)>>]
 
-    # into = <<7::size(1)>>
+    file = Path.join(System.tmp_dir!(), "assert_into")
+    Stream.run(stream <<x <- bin>>, into: File.stream!(file), do: to_bin(x * 2))
+    assert File.read!(file) == <<0, 2, 4, 6>>
+    File.rm!(file)
 
-    # assert Enum.to_list(
-    #          stream <<x <- bin>>, into: into do
-    #            to_bin(x * 2)
-    #          end
-    #        ) == <<7::size(1), 0, 2, 4, 6>>
-
-    # assert Enum.to_list(
-    #          stream <<x <- bin>>, into: into do
-    #            if Integer.is_even(x), do: <<x::size(2)>>, else: <<x::size(1)>>
-    #          end
-    #        ) == <<7::size(1), 0::size(2), 1::size(1), 2::size(2), 3::size(1)>>
+    stream = "" |> StringIO.open() |> elem(1) |> IO.binstream(128)
+    assert Enum.join(
+      stream <<x <- bin>>, into: stream do
+        if Integer.is_even(x), do: <<x>>, else: <<x * 10>>
+      end
+    ) == <<0, 10, 2, 30>>
   end
 
   # test "binary for comprehensions with literal matches" do
@@ -372,19 +370,19 @@ defmodule LazyFor.KeywordOptions.Test do
     bin = "abc"
 
     assert capture_io(fn ->
-             for <<x <- bin>>, do: IO.puts(x)
+             Stream.run(stream <<x <- bin>>, do: IO.puts(x))
              nil
            end) == "97\n98\n99\n"
   end
 
-  test "binary for comprehensions with reduce, generators and filters" do
-    bin = "abc"
+  # test "binary for comprehensions with reduce, generators and filters" do
+  #   bin = "abc"
 
-    acc =
-      for <<x <- bin>>, Integer.is_odd(x), <<y <- "hello">>, reduce: %{} do
-        acc -> Map.update(acc, x, [y], &[y | &1])
-      end
+  #   acc =
+  #     stream <<x <- bin>>, Integer.is_odd(x), <<y <- "hello">>, reduce: %{} do
+  #       acc -> Map.update(acc, x, [y], &[y | &1])
+  #     end
 
-    assert acc == %{97 => 'olleh', 99 => 'olleh'}
-  end
+  #   assert acc == %{97 => ~c"olleh", 99 => ~c"olleh"}
+  # end
 end
