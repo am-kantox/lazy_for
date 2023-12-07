@@ -35,17 +35,49 @@ defmodule LazyFor do
       iex> Enum.to_list(stream <<c <- "a|b|c">>, c != ?|, do: c)
       'abc'
   """
-  defmacrop a(), do: quote(do: {:acc, [], Elixir})
+  defmacrop a, do: quote(do: {:acc, [], Elixir})
 
   defmacrop __s__(any \\ {:_, [], nil}),
     do: quote(do: {:., [], [{:__aliases__, [alias: false], [:Stream]}, unquote(any)]})
 
-  defmacrop stransf(), do: quote(do: __s__(:transform))
-  defmacrop sfilter(), do: quote(do: __s__(:filter))
+  defmacrop stransf, do: quote(do: __s__(:transform))
+  defmacrop sfilter, do: quote(do: __s__(:filter))
 
   ##############################################################################
 
-  defp reduce_clauses(clauses, block, acc \\ []) do
+  defp reduce_clauses(clauses, block, acc \\ [])
+
+  defp reduce_clauses(
+         clauses,
+         [{:->, acc_meta, [[{acc_var_name, _, _} = acc_var], acc_ast]}],
+         acc
+       ) do
+    acc_ast =
+      Macro.postwalk(acc_ast, fn
+        {^acc_var_name, _, ctx} = ast_node when is_atom(ctx) ->
+          ast_node
+
+        {var_name, var_meta, ctx} when is_atom(var_name) and is_atom(ctx) ->
+          {{:., var_meta, [{:__aliases__, [alias: false], [:Keyword]}, :get]}, var_meta,
+           [{:e, [], nil}, var_name]}
+
+        ast_node ->
+          ast_node
+      end)
+
+    [reducer] = [{:fn, acc_meta, [{:->, acc_meta, [[{:e, [], nil}, acc_var], acc_ast]}]}]
+
+    {[], ast} =
+      clauses
+      |> Enum.reverse()
+      |> Enum.reduce({acc, quote(do: binding())}, fn outer, {acc, inner} ->
+        {acc, clause(outer, inner, acc)}
+      end)
+
+    {reducer, ast}
+  end
+
+  defp reduce_clauses(clauses, block, acc) do
     clauses
     |> Enum.reverse()
     |> Enum.reduce({acc, block}, fn outer, {acc, inner} ->
@@ -127,7 +159,7 @@ defmodule LazyFor do
 
   ##############################################################################
 
-  defp do_apply_opts(ast, opts) do
+  defp do_apply_opts({reducer, ast}, opts) do
     ast =
       if opts[:uniq],
         do: {{:., [], [{:__aliases__, [alias: false], [:Stream]}, :uniq]}, [], [ast]},
@@ -140,15 +172,31 @@ defmodule LazyFor do
         do: {{:., [], [{:__aliases__, [alias: false], [:Stream]}, :into]}, [], [ast, into]},
         else: ast
 
-    case opts[:take] do
-      :all ->
-        {{:., [], [{:__aliases__, [alias: false], [:Enum]}, :to_list]}, [], [ast]}
+    ast =
+      case opts[:take] do
+        :all ->
+          {{:., [], [{:__aliases__, [alias: false], [:Enum]}, :to_list]}, [], [ast]}
 
-      i when is_integer(i) ->
-        {{:., [], [{:__aliases__, [alias: false], [:Enum]}, :take]}, [], [ast, i]}
+        i when is_integer(i) ->
+          {{:., [], [{:__aliases__, [alias: false], [:Enum]}, :take]}, [], [ast, i]}
 
-      _ ->
+        _ ->
+          ast
+      end
+
+    case opts[:reduce] do
+      nil ->
+        if reducer != [], do: IO.warn("Reducer requires `reduce:` option, skipped")
         ast
+
+      acc ->
+        if reducer == [] do
+          IO.warn(
+            "`reduce:` option requires an explicit reducer in the form `acc -> ...`, skipped"
+          )
+        end
+
+        quote(do: Enum.reduce(unquote(ast), unquote(acc), unquote(reducer)))
     end
   end
 
@@ -174,12 +222,12 @@ defmodule LazyFor do
 
     defmacro stream(unquote_splicing(rest), unquote(last), do: block)
              when is_list(unquote(last)) do
-      with {_, ast} <- reduce_clauses(unquote(rest), block), do: do_apply_opts(ast, unquote(last))
+      unquote(rest) |> reduce_clauses(block) |> do_apply_opts(unquote(last))
     end
 
     defmacro stream(unquote_splicing(rest), unquote(last)) do
       {block, opts} = Keyword.pop(unquote(last), :do)
-      with {_, ast} <- reduce_clauses(unquote(rest), block), do: do_apply_opts(ast, opts)
+      unquote(rest) |> reduce_clauses(block) |> do_apply_opts(opts)
     end
   end
 end

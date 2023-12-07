@@ -26,5 +26,7 @@ lazy_for-*.tar
 
 /.elixir_ls/
 
+/.dialyzer/plts/
+
 /bench/snapshots/
 

@@ -287,11 +287,12 @@ defmodule LazyFor.KeywordOptions.Test do
     File.rm!(file)
 
     stream = "" |> StringIO.open() |> elem(1) |> IO.binstream(128)
+
     assert Enum.join(
-      stream <<x <- bin>>, into: stream do
-        if Integer.is_even(x), do: <<x>>, else: <<x * 10>>
-      end
-    ) == <<0, 10, 2, 30>>
+             stream <<x <- bin>>, into: stream do
+               if Integer.is_even(x), do: <<x>>, else: <<x * 10>>
+             end
+           ) == <<0, 10, 2, 30>>
   end
 
   # test "binary for comprehensions with literal matches" do
@@ -375,14 +376,14 @@ defmodule LazyFor.KeywordOptions.Test do
            end) == "97\n98\n99\n"
   end
 
-  # test "binary for comprehensions with reduce, generators and filters" do
-  #   bin = "abc"
+  test "binary for comprehensions with reduce, generators and filters" do
+    bin = "abc"
 
-  #   acc =
-  #     stream <<x <- bin>>, Integer.is_odd(x), <<y <- "hello">>, reduce: %{} do
-  #       acc -> Map.update(acc, x, [y], &[y | &1])
-  #     end
+    acc =
+      stream <<x <- bin>>, Integer.is_odd(x), <<y <- "hello">>, reduce: %{} do
+        inner_acc -> Map.update(inner_acc, x, [y], &[y | &1])
+      end
 
-  #   assert acc == %{97 => ~c"olleh", 99 => ~c"olleh"}
-  # end
+    assert acc == %{97 => ~c"olleh", 99 => ~c"olleh"}
+  end
 end
