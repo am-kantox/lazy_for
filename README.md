@@ -53,6 +53,10 @@ end
 
 ## Changelog
 
+### `v1.1.0`
+
+- `reduce:` optional argument is experimentally supported
+
 ### `v1.0.0`
 
 - version bump
