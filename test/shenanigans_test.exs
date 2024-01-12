@@ -376,6 +376,19 @@ defmodule LazyFor.KeywordOptions.Test do
            end) == "97\n98\n99\n"
   end
 
+  test "for comprehensions with reduce, reducer is required" do
+    code =
+      quote do
+        stream x <- 1..3, Integer.is_odd(x), <<y <- "hello">>, reduce: %{} do
+          Map.update(%{}, x, [y], &[y | &1])
+        end
+      end
+
+    capture_io(:stderr, fn ->
+      assert_raise CompileError, fn -> Code.compile_quoted(code) end
+    end) =~ ~r/do block must be written using acc -> expr clauses/
+  end
+
   test "binary for comprehensions with reduce, generators and filters" do
     bin = "abc"
 

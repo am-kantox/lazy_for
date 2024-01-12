@@ -35,6 +35,11 @@ defmodule LazyFor do
       iex> Enum.to_list(stream <<c <- "a|b|c">>, c != ?|, do: c)
       ~c"abc"
   """
+
+  import :elixir_errors
+  @doc false
+  def format_error(term), do: :elixir_expand.format_error(term)
+
   defmacrop a, do: quote(do: {:acc, [], Elixir})
 
   defmacrop __s__(any \\ {:_, [], nil}),
@@ -159,7 +164,7 @@ defmodule LazyFor do
 
   ##############################################################################
 
-  defp do_apply_opts({reducer, ast}, opts) do
+  defp do_apply_opts({reducer, ast}, opts, caller) do
     ast =
       if opts[:uniq],
         do: {{:., [], [{:__aliases__, [alias: false], [:Stream]}, :uniq]}, [], [ast]},
@@ -191,9 +196,7 @@ defmodule LazyFor do
 
       acc ->
         if reducer == [] do
-          IO.warn(
-            "`reduce:` option requires an explicit reducer in the form `acc -> ...`, skipped"
-          )
+          file_error([line: caller.line], caller.file, __MODULE__, :for_with_reduce_bad_block)
         end
 
         quote(do: Enum.reduce(unquote(ast), unquote(acc), unquote(reducer)))
@@ -222,12 +225,12 @@ defmodule LazyFor do
 
     defmacro stream(unquote_splicing(rest), unquote(last), do: block)
              when is_list(unquote(last)) do
-      unquote(rest) |> reduce_clauses(block) |> do_apply_opts(unquote(last))
+      unquote(rest) |> reduce_clauses(block) |> do_apply_opts(unquote(last), __CALLER__)
     end
 
     defmacro stream(unquote_splicing(rest), unquote(last)) do
       {block, opts} = Keyword.pop(unquote(last), :do)
-      unquote(rest) |> reduce_clauses(block) |> do_apply_opts(opts)
+      unquote(rest) |> reduce_clauses(block) |> do_apply_opts(opts, __CALLER__)
     end
   end
 end

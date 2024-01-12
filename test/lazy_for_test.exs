@@ -49,6 +49,9 @@ defmodule LazyFor.Test do
     greedy = for i <- list, rem(i, 3) == 0, do: i * 2
     lazy = stream(i <- list, rem(i, 3) == 0, take: :all, do: i * 2)
     assert greedy == lazy
+
+    lazy = stream(i <- list, rem(i, 3) == 0, take: 5, do: i * 2)
+    assert Enum.take(greedy, 5) == lazy
   end
 
   test "works as native stream" do
@@ -62,6 +65,9 @@ defmodule LazyFor.Test do
 
     lazy = stream(i <- list, rem(i, 33) == 0, take: :all, do: i * 2)
     assert native == lazy
+
+    lazy = stream(i <- list, rem(i, 33) == 0, take: 5, do: i * 2)
+    assert Enum.take(native, 5) == lazy
   end
 
   ##############################################################################
