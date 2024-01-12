@@ -22,7 +22,9 @@ defmodule LazyFor.MixProject do
       dialyzer: [
         plt_file: {:no_warn, ".dialyzer/plts/dialyzer.plt"},
         ignore_warnings: ".dialyzer/ignore.exs"
-      ]
+      ],
+      preferred_cli_env: [coveralls: :test, "coveralls.github": :test],
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -49,6 +51,7 @@ defmodule LazyFor.MixProject do
       {:benchfella, "~> 0.3", only: [:dev]},
       {:credo, "~> 1.0", only: [:dev, :ci], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :ci], runtime: false},
+      {:excoveralls, "~> 0.13", only: [:test]},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
