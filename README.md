@@ -1,4 +1,4 @@
-# LazyFor
+# LazyFor [![Kantox ❤ OSS](https://img.shields.io/badge/❤-kantox_oss-informational.svg)](https://kantox.com/)  ![Test](https://github.com/am-kantox/lazy_for/workflows/Test/badge.svg)  ![Dialyzer](https://github.com/am-kantox/lazy_for/workflows/Dialyzer/badge.svg)  [![Coverage Status](https://coveralls.io/repos/github/am-kantox/lazy_for/badge.svg?branch=master)](https://coveralls.io/github/am-kantox/lazy_for?branch=master)
 
 ![Scene in club lounge, by Thomas Rowlandson](https://raw.githubusercontent.com/am-kantox/lazy_for/master/stuff/1118px-British_club_scene.jpg)
 > <small>Scene in club lounge, by [Thomas Rowlandson](https://en.wikipedia.org/wiki/Thomas_Rowlandson)</small>
