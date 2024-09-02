@@ -2,7 +2,7 @@
 
 ![Scene in club lounge, by Thomas Rowlandson](https://raw.githubusercontent.com/am-kantox/lazy_for/master/stuff/1118px-British_club_scene.jpg)
 
-<sup>— _Scene in club lounge, by [Thomas Rowlandson](https://en.wikipedia.org/wiki/Thomas_Rowlandson)_</sup>
+_Scene in club lounge, by [Thomas Rowlandson](https://en.wikipedia.org/wiki/Thomas_Rowlandson)_
 
 ## About
 
