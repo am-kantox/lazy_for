@@ -23,12 +23,15 @@ defmodule LazyFor.MixProject do
         plt_file: {:no_warn, ".dialyzer/plts/dialyzer.plt"},
         ignore_warnings: ".dialyzer/ignore.exs"
       ],
-      preferred_cli_env: [coveralls: :test, "coveralls.github": :test],
       test_coverage: [tool: ExCoveralls]
     ]
   end
 
   def application, do: [extra_applications: []]
+
+  def cli do
+    [preferred_envs: [coveralls: :test, "coveralls.github": :test]]
+  end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(:ci), do: ["lib", "test/support"]

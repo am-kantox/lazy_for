@@ -127,13 +127,21 @@ defmodule LazyFor do
   defp clause({:<<>>, outer_meta, [{:<-, meta, [{:<<>>, _, [var]}, source]}]}, inner, acc),
     do: clause({:<<>>, outer_meta, [{:<-, meta, [var, source]}]}, inner, acc)
 
-  defp clause({:<<>>, _, [{:<-, meta, [var, source]}]}, inner, acc),
-    do:
-      clause(
-        {:<-, meta, [var, {{:., [], [:erlang, :bitstring_to_list]}, [], [source]}]},
-        inner,
-        acc
-      )
+  defp clause({:<<>>, _, [{:<-, meta, [var, source]}]}, inner, acc) do
+    clause(
+      {:<-, meta, [var, {{:., [], [:erlang, :bitstring_to_list]}, [], [source]}]},
+      inner,
+      acc
+    )
+  end
+
+  defp clause({:<<>>, _outer_meta, [1, {:<-, meta, [var, source]}]}, inner, acc) do
+    clause(
+      {:<-, meta, [var, {{:., [], [:erlang, :bitstring_to_list]}, [], [source]}]},
+      inner,
+      acc
+    )
+  end
 
   # condition
   defp clause(guard, {__s__(), _, _} = inner, _acc),

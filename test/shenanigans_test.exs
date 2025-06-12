@@ -100,13 +100,13 @@ defmodule LazyFor.KeywordOptions.Test do
              end
            ) == [<<0::size(2)>>, <<1::size(1)>>, <<2::size(2)>>, <<3::size(1)>>]
 
-    # into = <<7::size(1)>>
+    # into = <<1::size(1)>>
 
     # assert Enum.to_list(
     #          stream x <- enum, into: into do
     #            to_bin(x * 2)
     #          end
-    #        ) == <<7::size(1), 0, 2, 4, 6>>
+    #        ) == <<1::size(1), 0, 2, 4, 6>>
 
     # assert Enum.to_list(
     #          stream x <- enum, into: into do
@@ -295,53 +295,54 @@ defmodule LazyFor.KeywordOptions.Test do
            ) == <<0, 10, 2, 30>>
   end
 
-  # test "binary for comprehensions with literal matches" do
-  #   # Integers
-  #   bin = <<1, 2, 1, 3, 1, 4>>
-  #   assert Enum.to_list(stream(<<1, x <- bin>>, into: "", do: to_bin(x))) == <<2, 3, 4>>
+  @tag :skip
+  test "binary for comprehensions with literal matches" do
+    # Integers
+    bin = <<1, 2, 1, 3, 1, 4>>
+    assert Enum.to_list(stream(<<1, x <- bin>>, into: "", do: to_bin(x))) == <<2, 3, 4>>
 
-  #   assert Enum.to_list(stream(<<1, x <- bin>>, into: %{}, do: {x, x})) == %{
-  #            2 => 2,
-  #            3 => 3,
-  #            4 => 4
-  #          }
+    assert Enum.to_list(stream(<<1, x <- bin>>, into: %{}, do: {x, x})) == %{
+             2 => 2,
+             3 => 3,
+             4 => 4
+           }
 
-  #   bin = <<1, 2, 3, 1, 4>>
-  #   assert Enum.to_list(stream(<<1, x <- bin>>, into: "", do: to_bin(x))) == <<2>>
-  #   assert Enum.to_list(stream(<<1, x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
+    #   bin = <<1, 2, 3, 1, 4>>
+    #   assert Enum.to_list(stream(<<1, x <- bin>>, into: "", do: to_bin(x))) == <<2>>
+    #   assert Enum.to_list(stream(<<1, x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
 
-  #   # Floats
-  #   bin = <<1.0, 2, 1.0, 3, 1.0, 4>>
-  #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: "", do: to_bin(x))) == <<2, 3, 4>>
+    #   # Floats
+    #   bin = <<1.0, 2, 1.0, 3, 1.0, 4>>
+    #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: "", do: to_bin(x))) == <<2, 3, 4>>
 
-  #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: %{}, do: {x, x})) == %{
-  #            2 => 2,
-  #            3 => 3,
-  #            4 => 4
-  #          }
+    #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: %{}, do: {x, x})) == %{
+    #            2 => 2,
+    #            3 => 3,
+    #            4 => 4
+    #          }
 
-  #   bin = <<1.0, 2, 3, 1.0, 4>>
-  #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: "", do: to_bin(x))) == <<2>>
-  #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
+    #   bin = <<1.0, 2, 3, 1.0, 4>>
+    #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: "", do: to_bin(x))) == <<2>>
+    #   assert Enum.to_list(stream(<<1.0, x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
 
-  #   # Binaries
-  #   bin = <<"foo", 2, "foo", 3, "foo", 4>>
-  #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: "", do: to_bin(x))) == <<2, 3, 4>>
+    #   # Binaries
+    #   bin = <<"foo", 2, "foo", 3, "foo", 4>>
+    #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: "", do: to_bin(x))) == <<2, 3, 4>>
 
-  #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: %{}, do: {x, x})) == %{
-  #            2 => 2,
-  #            3 => 3,
-  #            4 => 4
-  #          }
+    #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: %{}, do: {x, x})) == %{
+    #            2 => 2,
+    #            3 => 3,
+    #            4 => 4
+    #          }
 
-  #   bin = <<"foo", 2, 3, "foo", 4>>
-  #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: "", do: to_bin(x))) == <<2>>
-  #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
+    #   bin = <<"foo", 2, 3, "foo", 4>>
+    #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: "", do: to_bin(x))) == <<2>>
+    #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
 
-  #   bin = <<"foo", 2, 3, 4, "foo", 5>>
-  #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: "", do: to_bin(x))) == <<2>>
-  #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
-  # end
+    #   bin = <<"foo", 2, 3, 4, "foo", 5>>
+    #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: "", do: to_bin(x))) == <<2>>
+    #   assert Enum.to_list(stream(<<"foo", x <- bin>>, into: %{}, do: {x, x})) == %{2 => 2}
+  end
 
   # test "binary for comprehensions with variable size" do
   #   s = 16
